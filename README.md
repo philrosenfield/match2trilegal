@@ -12,6 +12,10 @@ Usage
 match2trilegal [options] infile outfile
 
 options :
+
    -z : use the z-dispersion from the MATCH file
+
 infile : MATCH SFH table
+
 outfile : TRILEGAL AMR file to write to
+
