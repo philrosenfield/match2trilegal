@@ -6,7 +6,8 @@ setup(
     name='match2trilegal',
     author='Phil Rosenfield',
     author_email='philip.rosenfield@unipd.it',
-    version='0.1',
+    version='0.3',
     py_modules=['match2trilegal'],
     scripts=['match2trilegal']
+    install_requires=['numpy']
 )

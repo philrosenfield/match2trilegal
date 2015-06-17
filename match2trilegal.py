@@ -1,6 +1,5 @@
+from __future__ import print_function
 """Utilities for converting MATCH SFH for use in TRILEGAL."""
-
-__version__ = '0.1'
 
 import argparse
 import numpy as np
@@ -12,10 +11,9 @@ def read_binned_sfh(filename):
     read the MATCH calcsfh, zcombine, or hybridMC output file as recarray.
     
     NOTE:
-    This code calls genfromtext up to 3 times.
-    There may be a better way to figure out
-    how many background lines or if there is a header.
-    Since it's a small file it doesn't add much time.
+    This code calls genfromtext up to 3 times. There may be a better way to
+    figure out how many background lines or if there is a header.
+    It's a small file so it's not a big deal.
     '''
     dtype = [('lagei', '<f8'),
              ('lagef', '<f8'),
@@ -44,9 +42,10 @@ def read_binned_sfh(filename):
     return data.view(np.recarray)
 
 
-def process_match_sfh(sfhfile, outfile='processed_sfh.out', zdisp=0.):
+def process_match_sfh(sfhfile, outfile='processed_sfh.out', use_zdisp=False):
     '''
     Convert a match sfh file into a sfr-z table for trilegal
+
     Parameters
     ----------
     sfhfile : str
@@ -55,12 +54,12 @@ def process_match_sfh(sfhfile, outfile='processed_sfh.out', zdisp=0.):
     outfile : str
         TRILEGAL sfr-z table filename to write to
     
-    zdisp : float [0.0]
-        Constant z-dispersion to add to the TRILEGAL table (optional)
+    zdisp : bool
+        Use z-dispersion reported by MATCH
 
     '''
     # trilegal line format (z-dispersion is a string so it can be empty if 0.)
-    fmt = '%.6g %.6g %.4g %s \n'
+    fmt = '{:.6g} {:.6g} {:.4g} {} \n'
 
     data = read_binned_sfh(sfhfile)
     sfr = data['sfr']
@@ -71,14 +70,10 @@ def process_match_sfh(sfhfile, outfile='processed_sfh.out', zdisp=0.):
     tf = data['lagef'][inds]
     dlogz = data['mh'][inds]
     half_bin = np.diff(dlogz[0: 2])[0] / 2.
-    if zdisp > 0:
-        zdisp = '%.4g' % (0.02 * 10 ** zdisp)
+    if use_zdisp:
+        zdisp = data['mh_disp'][inds]
     else:
-        zdisp = ''
-
-    # correct max age limit for trilegal isochrones.
-    # with PARSEC V>1.1 there is no need!
-    #tf[tf == 10.15] = 10.13
+        zdisp = [''] * len(to) 
 
     with open(outfile, 'w') as out:
         for i in range(len(to)):
@@ -93,14 +88,14 @@ def process_match_sfh(sfhfile, outfile='processed_sfh.out', zdisp=0.):
             age2a = 1.0 * 10 ** tf[i]
             age2p = 1.0 * 10 ** (tf[i] + 0.0001)
 
-            out.write(fmt % (age1a, 0.0, z1, zdisp))
-            out.write(fmt % (age1p, sfr[i], z1, zdisp))
-            out.write(fmt % (age2a, sfr[i], z2, zdisp))
-            out.write(fmt % (age2p, 0.0, z2, zdisp))
-            out.write(fmt % (age1a, 0.0, z2, zdisp))
-            out.write(fmt % (age1p, sfr[i], z2, zdisp))
-            out.write(fmt % (age2a, sfr[i], z1, zdisp))
-            out.write(fmt % (age2p, 0.0, z1, zdisp))
+            out.write(fmt.format(age1a, 0.0, z1, zdisp[i]))
+            out.write(fmt.format(age1p, sfr[i], z1, zdisp[i]))
+            out.write(fmt.format(age2a, sfr[i], z2, zdisp[i]))
+            out.write(fmt.format(age2p, 0.0, z2, zdisp[i]))
+            out.write(fmt.format(age1a, 0.0, z2, zdisp[i]))
+            out.write(fmt.format(age1p, sfr[i], z2, zdisp[i]))
+            out.write(fmt.format(age2a, sfr[i], z1, zdisp[i]))
+            out.write(fmt.format(age2p, 0.0, z1, zdisp[i]))
 
-    print('wrote', outfile)
+    print('wrote {}'.format(outfile))
     return outfile

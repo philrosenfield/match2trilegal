@@ -11,7 +11,7 @@ def main(argv):
 
     parser = argparse.ArgumentParser(description="Convert MATCH SFH file to TRILEGAL SFR, Z file")
 
-    parser.add_argument('-z', '--zdisp', type=float, default=0.,
+    parser.add_argument('-z', '--use_zdisp', action='store_true',
                         help='include a constant value of z-dispersion')
 
     parser.add_argument('infile', type=str, help='match sfh file')
@@ -21,7 +21,7 @@ def main(argv):
 
     args = parser.parse_args(argv)
 
-    process_match_sfh(args.infile, outfile=args.outfile, zdisp=args.zdisp)
+    process_match_sfh(args.infile, outfile=args.outfile, use_zdisp=args.use_zdisp)
     
     return    
 
