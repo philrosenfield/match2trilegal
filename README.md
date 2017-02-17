@@ -4,7 +4,7 @@ Convert MATCH SFH for use in TRILEGAL
 
 ## Install
 
-<pre>sudo pip install match2trilegal</pre>
+<pre> pip install match2trilegal</pre>
 
 ## Usage
 
