@@ -1,21 +1,27 @@
-match2trilegal
-===============================================
+# match2trilegal
+
 Convert MATCH SFH for use in TRILEGAL
 
-Install
----------------
-<pre><code> sudo pip install match2trilegal
-</pre></code>
+## Install
 
-Usage
---------------
-match2trilegal [options] infile outfile
+<pre>sudo pip install match2trilegal</pre>
 
-options :
+## Usage
 
-   -z : use the z-dispersion from the MATCH file
+<pre>
+match2trilegal [-h] [--zsun ZSUN] [-z ZDISP] [-p] [-o OUTFILE] infile
 
-infile : MATCH SFH table
+Convert MATCH SFH file to TRILEGAL SFR, Z file
 
-outfile : TRILEGAL AMR file to write to
+positional arguments:
+  infile                match sfh file
 
+optional arguments:
+  -h, --help            show this help message and exit
+  --zsun ZSUN           solar metallicity used in MATCH
+  -z ZDISP, --zdisp ZDISP
+                        include a constant value of z-dispersion
+  -p, --popbox          convert population box (not match sfh)
+  -o OUTFILE, --outfile OUTFILE
+                        output trilegal AMR file
+</pre>
